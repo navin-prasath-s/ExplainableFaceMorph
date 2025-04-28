@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>AI Image Detection Survey</title>
+    <style>
+        /* Reset default margins and set a dark gradient background */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2c2c2c 100%);
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Container to center and constrain content */
+        .container {
+            text-align: center;
+            max-width: 1200px;
+            padding: 20px;
+        }
+
+        /* Title styling */
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            color: #f0f0f0;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Canvas styling with shadow and border */
+        #canvas {
+            border: 2px solid #444;
+            border-radius: 8px;
+            display: none;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+            background-color: transparent; /* Make canvas background transparent */
+        }
+
+        /* Controls container */
+        .controls {
+            margin: 20px 0;
+            display: none;
+            transition: opacity 0.3s ease;
+        }
+
+        /* Phase controls */
+        .phase1-controls, .phase2-controls {
+            display: inline-block;
+            margin: 0 10px;
+        }
+
+        /* General button styling */
+        button {
+            padding: 10px 20px;
+            margin: 0 5px;
+            font-size: 1rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.1s ease;
+        }
+
+        /* Submit button */
+        #submitBtn {
+            background-color: #2196F3;
+            color: white;
+        }
+
+        #submitBtn:hover {
+            background-color: #1e88e5;
+            transform: scale(1.05);
+        }
+
+        #submitBtn:active {
+            transform: scale(0.95);
+        }
+
+        /* Undo button */
+        #undoBtn {
+            background-color: #f44336;
+            color: white;
+        }
+
+        #undoBtn:hover {
+            background-color: #e53935;
+            transform: scale(1.05);
+        }
+
+        #undoBtn:active {
+            transform: scale(0.95);
+        }
+
+        /* Real button */
+        #realBtn {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        #realBtn:hover {
+            background-color: #45a049;
+            transform: scale(1.05);
+        }
+
+        #realBtn:active {
+            transform: scale(0.95);
+        }
+
+        /* Fake button */
+        #fakeBtn {
+            background-color: #f44336;
+            color: white;
+        }
+
+        #fakeBtn:hover {
+            background-color: #e53935;
+            transform: scale(1.05);
+        }
+
+        #fakeBtn:active {
+            transform: scale(0.95);
+        }
+
+        /* Message styling */
+        #message {
+            display: none;
+            font-size: 1.5rem;
+            color: #4CAF50;
+            text-align: center;
+            margin-top: 30px;
+            background-color: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+            transition: opacity 0.3s ease;
+        }
+
+        /* Landing and Task Page Styling */
+        #landingPage, #taskPage {
+            max-width: 600px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+        }
+
+        #landingPage p, #taskPage p {
+            font-size: 1.2rem;
+            line-height: 1.6;
+            margin: 15px 0;
+        }
+
+        #taskPage ul {
+            text-align: left;
+            margin: 20px 0;
+            padding-left: 20px;
+        }
+
+        #taskPage li {
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+        }
+
+        #startSurveyBtn, #beginImagesBtn {
+            padding: 12px 24px;
+            font-size: 1.2rem;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.1s ease;
+        }
+
+        #startSurveyBtn:hover, #beginImagesBtn:hover {
+            background-color: #45a049;
+            transform: scale(1.05);
+        }
+
+        #startSurveyBtn:active, #beginImagesBtn:active {
+            transform: scale(0.95);
+        }
+
+        /* Ensure only one page is visible at a time */
+        #landingPage, #taskPage, #canvasApp {
+            transition: opacity 0.3s ease;
+        }
+
+        #landingPage:not([style*="display: none"]), 
+        #taskPage:not([style*="display: none"]), 
+        #canvasApp:not([style*="display: none"]) {
+            opacity: 1;
+        }
+
+        #landingPage[style*="display: none"], 
+        #taskPage[style*="display: none"], 
+        #canvasApp[style*="display: none"] {
+            opacity: 0;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Landing Page -->
+        <div id="landingPage">
+            <h1>AI Image Detection Survey</h1>
+            <p>This survey tests your ability to spot AI modifications in images. It takes about 3-5 minutes to complete.</p>
+            <p>We do not collect any personal information, and all responses are anonymous.</p>
+            <button id="startSurveyBtn">Start Survey</button>
+        </div>
+        <!-- Task Description Page -->
+        <div id="taskPage" style="display: none;">
+            <h1>Survey Instructions</h1>
+            <p>You will view 5 images that have been modified by AI. For each image:</p>
+            <ul>
+                <li>Mark the areas you think have been altered by clicking or dragging to draw.</li>
+                <li>You can select multiple areas if needed.</li>
+                <li>Click 'Submit Mask' to move to the next image.</li>
+                <li>Use 'Undo' to remove your last mark if needed.</li>
+            </ul>
+            <p>Your selections are anonymous and used only for this study.</p>
+            <button id="beginImagesBtn">Begin Images</button>
+        </div>
+        <!-- Canvas App -->
+        <div id="canvasApp" style="display: none;">
+            <h1>AI Image Detection Survey</h1>
+            <div class="controls">
+                <div class="phase1-controls">
+                    <button id="submitBtn">Submit Mask</button>
+                    <button id="undoBtn">Undo</button>
+                </div>
+                <div class="phase2-controls" style="display: none;">
+                    <button id="realBtn">Real</button>
+                    <button id="fakeBtn">Fake</button>
+                </div>
+            </div>
+            <canvas id="canvas"></canvas>
+            <div id="message"></div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/fabric@latest/dist/index.min.js"></script>
+    <script src="survey_app_mod.js"></script>
+</body>
+</html> 

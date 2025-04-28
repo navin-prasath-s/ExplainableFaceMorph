@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>AI Image Detection Survey</title>
+    <style>
+        /* Reset default margins and set a dark gradient background */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2c2c2c 100%);
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Container to center and constrain content */
+        .container {
+            text-align: center;
+            max-width: 1200px;
+            padding: 20px;
+        }
+
+        /* Title styling */
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            color: #f0f0f0;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Canvas styling with shadow and border */
+        #canvas {
+            border: 2px solid #444;
+            border-radius: 8px;
+            display: none;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+            background-color: transparent; /* Make canvas background transparent */
+        }
+
+        /* Controls container */
+        .controls {
+            margin: 20px 0;
+            display: none;
+            transition: opacity 0.3s ease;
+        }
+
+        /* Phase controls */
+        .phase1-controls, .phase2-controls {
+            display: inline-block;
+            margin: 0 10px;
+        }
+
+        /* Start button */
+        #startBtn {
+            margin: 20px;
+            padding: 12px 24px;
+            font-size: 1.2rem;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.1s ease;
+        }
+
+        #startBtn:hover {
+            background-color: #45a049;
+            transform: scale(1.05);
+        }
+
+        #startBtn:active {
+            transform: scale(0.95);
+        }
+
+        /* General button styling */
+        button {
+            padding: 10px 20px;
+            margin: 0 5px;
+            font-size: 1rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.1s ease;
+        }
+
+        /* Submit button */
+        #submitBtn {
+            background-color: #2196F3;
+            color: white;
+        }
+
+        #submitBtn:hover {
+            background-color: #1e88e5;
+            transform: scale(1.05);
+        }
+
+        #submitBtn:active {
+            transform: scale(0.95);
+        }
+
+        /* Undo button */
+        #undoBtn {
+            background-color: #f44336;
+            color: white;
+        }
+
+        #undoBtn:hover {
+            background-color: #e53935;
+            transform: scale(1.05);
+        }
+
+        #undoBtn:active {
+            transform: scale(0.95);
+        }
+
+        /* Real button */
+        #realBtn {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        #realBtn:hover {
+            background-color: #45a049;
+            transform: scale(1.05);
+        }
+
+        #realBtn:active {
+            transform: scale(0.95);
+        }
+
+        /* Fake button */
+        #fakeBtn {
+            background-color: #f44336;
+            color: white;
+        }
+
+        #fakeBtn:hover {
+            background-color: #e53935;
+            transform: scale(1.05);
+        }
+
+        #fakeBtn:active {
+            transform: scale(0.95);
+        }
+
+        /* Message styling */
+        #message {
+            display: none;
+            font-size: 1.5rem;
+            color: #4CAF50;
+            text-align: center;
+            margin-top: 30px;
+            background-color: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+            transition: opacity 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Image Masking App</h1>
+        <button id="startBtn">Start</button>
+        <div class="controls">
+            <div class="phase1-controls">
+                <button id="submitBtn">Submit Mask</button>
+                <button id="undoBtn">Undo</button>
+            </div>
+            <div class="phase2-controls" style="display: none;">
+                <button id="realBtn">Real</button>
+                <button id="fakeBtn">Fake</button>
+            </div>
+        </div>
+        <canvas id="canvas"></canvas>
+        <div id="message"></div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/fabric@latest/dist/index.min.js"></script>
+    <script src="survey_app.js"></script>
+</body>
+</html> 

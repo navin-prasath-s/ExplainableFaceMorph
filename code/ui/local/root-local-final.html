@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Image Masking App</title>
+    <style>
+        #canvas {
+            border: 1px solid #ccc;
+            display: none;
+        }
+        .controls {
+            margin: 10px 0;
+            display: none;
+        }
+        .phase1-controls, .phase2-controls {
+            display: inline-block;
+            margin-right: 10px;
+        }
+        #startBtn {
+            margin: 20px;
+        }
+        #message {
+            display: none;
+            font-size: 24px;
+            color: green;
+            text-align: center;
+            margin-top: 20px;
+        }
+        button {
+            padding: 5px 10px;
+            margin: 0 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Image Masking App</h1>
+    <button id="startBtn">Start</button>
+    <div class="controls">
+        <div class="phase1-controls">
+            <button id="submitBtn">Submit Mask</button>
+            <button id="undoBtn">Undo</button>
+        </div>
+        <div class="phase2-controls" style="display: none;">
+            <button id="realBtn">Real</button>
+            <button id="fakeBtn">Fake</button>
+        </div>
+    </div>
+    <canvas id="canvas"></canvas>
+    <div id="message"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/fabric@latest/dist/index.min.js"></script>
+    <script src="app-local-final.js"></script>
+</body>
+</html>

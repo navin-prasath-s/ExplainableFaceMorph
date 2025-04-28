@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Simple Image Masking App</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 20px;
+            background-color: #f0f0f0;
+        }
+        canvas {
+            border: 1px solid #000;
+            margin-top: 10px;
+        }
+        button, input {
+            margin: 5px;
+            padding: 8px 16px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Simple Image Masking App</h1>
+    <input type="file" id="imageInput" accept="image/*">
+    <div>
+        <button id="undoBtn">Undo</button>
+        <button id="saveBtn">Save Mask</button>
+    </div>
+    <canvas id="canvas"></canvas>
+
+    <script src="https://cdn.jsdelivr.net/npm/fabric@latest/dist/index.min.js"></script>
+    <script>
+        const canvas = new fabric.Canvas('canvas', {
+            isDrawingMode: false,
+            selection: false
+        });
+        canvas.freeDrawingBrush = new fabric.PencilBrush(canvas);
+        canvas.freeDrawingBrush.width = 10;
+        canvas.freeDrawingBrush.color = 'rgba(255, 0, 0, 0.5)';
+
+        let drawnObjects = [];
+        let currentImage = null;
+
+        canvas.on('path:created', function(e) {
+            drawnObjects.push(e.path);
+        });
+
+        document.getElementById('imageInput').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    const imgObj = new Image();
+                    imgObj.src = event.target.result;
+                    imgObj.onload = function() {
+                        canvas.setWidth(imgObj.width);
+                        canvas.setHeight(imgObj.height);
+                        currentImage = new fabric.Image(imgObj, {
+                            selectable: false,
+                            evented: false
+                        });
+                        canvas.clear();
+                        drawnObjects = [];
+                        canvas.add(currentImage);
+                        canvas.isDrawingMode = true;
+                        canvas.renderAll();
+                    };
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        document.getElementById('undoBtn').addEventListener('click', function() {
+            if (drawnObjects.length > 0) {
+                const lastPath = drawnObjects.pop();
+                canvas.remove(lastPath);
+                canvas.renderAll();
+            }
+        });
+
+        document.getElementById('saveBtn').addEventListener('click', function() {
+            if (!currentImage) {
+                alert('Please load an image first.');
+                return;
+            }
+
+            // Create a temporary canvas to extract the mask
+            const tempCanvas = document.createElement('canvas');
+            tempCanvas.width = canvas.width;
+            tempCanvas.height = canvas.height;
+            const tempCtx = tempCanvas.getContext('2d');
+            tempCtx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Draw only the drawn paths
+            canvas.forEachObject(function(obj) {
+                if (obj.type !== 'image') {
+                    tempCtx.drawImage(obj.toCanvasElement(), obj.left || 0, obj.top || 0);
+                }
+            });
+
+            // Convert to binary mask array
+            const imageData = tempCtx.getImageData(0, 0, canvas.width, canvas.height);
+            const pixels = imageData.data;
+            const maskArray = Array(canvas.height).fill().map(() => Array(canvas.width).fill(0));
+            for (let i = 0; i < pixels.length; i += 4) {
+                const alpha = pixels[i + 3];
+                if (alpha > 0) {
+                    const x = (i / 4) % canvas.width;
+                    const y = Math.floor((i / 4) / canvas.width);
+                    maskArray[y][x] = 1;
+                }
+            }
+
+            // Create JSON data
+            const maskData = {
+                image_width: canvas.width,
+                image_height: canvas.height,
+                mask: maskArray
+            };
+
+            // Save as JSON file
+            try {
+                const jsonString = JSON.stringify(maskData, null, 2);
+                const blob = new Blob([jsonString], { type: 'application/json' });
+                const url = window.URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = 'mask.json';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                window.URL.revokeObjectURL(url);
+            } catch (error) {
+                console.error('Error saving JSON:', error);
+                alert('Failed to save JSON file: ' + error.message);
+            }
+        });
+    </script>
+</body>
+</html>
